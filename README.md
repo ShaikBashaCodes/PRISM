@@ -114,7 +114,7 @@ Enter data: 1 4 9 16 25
 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
   ✓ Parsed 5 valid points | Discarded: 0
-
+  ✓ Batch 1/1 completed
 OVERALL ANALYSIS SUMMARY:
   ● Input Points               : 5
   ● Valid Points               : 5
