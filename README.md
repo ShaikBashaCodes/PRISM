@@ -19,7 +19,7 @@
 - Handles multiple formats: space-separated, comma-separated, mixed
 - Auto-filters invalid data: NULL, NA, NaN, empty values
 - Recovers from malformed input without crashing
-- Supports bracketed notation: `[1,4,9,16,25]`
+- Supports bracket notation: `[1,4,9,16,25]`
 
 ### 2. **Pattern Detection Engine**
 Detects three mathematical patterns with R² confidence scoring:
