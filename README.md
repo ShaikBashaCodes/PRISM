@@ -8,7 +8,7 @@
 ### ✅ Code Olympics Compliance
 
 | Constraint | Details |
-|---|---|---|
+|---|---|
 | **Error-Proof Coder** | Never crashes, handles all inputs gracefully |
 | **Line Budget** | 290 lines (under 300 limit) |
 | **Number Crunching** | Advanced statistics & pattern detection algorithms |
