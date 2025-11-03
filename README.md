@@ -184,9 +184,7 @@ Anomaly if Z > 3 (HIGH) or Z > 5 (CRITICAL)
 
 | Metric | Value | Notes |
 |---|---|---|
-| **Lines of Code** | 280 | Compact, efficient |
-| **Functions** | 8 | Single responsibility |
-| **Max Data Points** | 9000+ | Batch processing (1000/batch) |
+| **Lines of Code** | 290 | Compact, efficient |
 | **Processing Time** | <1s | For typical datasets |
 | **Memory Usage** | Minimal | O(n) with batch optimization |
 | **Error Recovery** | 100% | Zero crashes recorded |
