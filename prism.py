@@ -1,4 +1,4 @@
-import math
+import math, time
 from typing import List, Tuple, Dict
 
 class Engine:
@@ -18,8 +18,8 @@ class Engine:
     WHITE = "\033[97m"
     BG_DARK = "\033[40m"
 
+    # Parse raw input string into float list, count invalid entries
     def parse(self, raw: str) -> Tuple[List[float], int]:
-        # Parse input and count invalid entries
         try:
             raw = raw.strip().replace('[','').replace(']','')
             vals = []
@@ -46,8 +46,8 @@ class Engine:
         except:
             return [0], 1
 
+    # Remove extreme values and invalid data points
     def clean(self, d: List[float]) -> Tuple[List[float], int]:
-        # Remove extreme values and invalid data
         clean, inv = [], 0
         for v in d:
             try:
@@ -59,8 +59,8 @@ class Engine:
                 inv += 1
         return clean if clean else [0], inv
 
+    # Fit linear regression model: y = ax + b, return coefficients and R²
     def fit(self, x, y) -> Tuple[float, float, float]:
-        # Linear regression: y = ax + b
         n, mx, my = len(x), sum(x)/len(x), sum(y)/len(y)
         num = sum((x[i]-mx)*(y[i]-my) for i in range(n))
         den = sum((x[i]-mx)**2 for i in range(n))
@@ -72,8 +72,8 @@ class Engine:
         r2 = 1-(ss_res/ss_tot) if ss_tot > 1e-10 else 0.5
         return a, b, max(0, r2)
 
+    # Analyze data and detect best fitting pattern (LINEAR, QUAD, or EXP)
     def analyze(self, y: List[float]) -> Dict:
-        # Try LINEAR, QUAD, EXPONENTIAL patterns
         x = list(range(len(y)))
         res = {}
         try:
@@ -106,8 +106,8 @@ class Engine:
         best = max(res.items(), key=lambda kv: kv[1].get('r2', -1))
         return {'t': best[0], 'r': best[1].get('r2', 0), 'p': best[1]}
 
+    # Detect anomalies using Z-score method with severity levels
     def anom(self, y: List[float]) -> Tuple[int, str, List]:
-        # Detect anomalies using Z-score
         try:
             if len(y) < 2:
                 return 0, "LOW", []
@@ -126,16 +126,16 @@ class Engine:
         except:
             return 0, "LOW", []
 
+    # Calculate system stability score (0-100%) from data quality and anomalies
     def calc_stability(self, total_invalid, total_points, anomalies, danger):
-        # Calculate system stability (0-100%)
         data_quality = ((total_points - total_invalid) / total_points * 100) if total_points > 0 else 0
         anomaly_ratio = (anomalies / total_points * 100) if total_points > 0 else 0
         danger_score = {'LOW': 100, 'HIGH': 50, 'CRITICAL': 0}.get(danger, 75)
         stability = (data_quality * 0.5 + (100 - anomaly_ratio) * 0.3 + danger_score * 0.2)
         return round(stability, 2)
 
+    # Process single batch: clean, analyze patterns, detect anomalies, calculate statistics
     def proc(self, batch: List[float], bid: int, invalid_from_parse: int) -> Dict:
-        # Process batch and calculate statistics
         clean, inv_clean = self.clean(batch)
         if not clean:
             return None
@@ -157,21 +157,34 @@ class Engine:
             "anom": anom_c, "danger": dang, "anom_details": anom_details
         }
 
+    # Print formatted metric with label, value, unit and color coding
     def print_metric(self, label, value, unit="", color=None):
-        # Print formatted metric with color
         if color is None:
             color = self.CYAN
         spacing = " " * (40 - len(label))
         print(f"  {color}●{self.RESET}  {label}{spacing}: {self.BOLD}{value}{unit}{self.RESET}")
 
+    # Main execution: read input, process batches, analyze patterns, display results with timing
     def run(self):
-        # Main execution
         print(f"\n{self.CYAN}{self.BOLD}{'▀'*80}{self.RESET}")
         print(f"{self.CYAN}{self.BOLD}  ⚡ PRISM v1.0 - Professional Pattern Recognition Engine{self.RESET}")
         print(f"{self.CYAN}{self.BOLD}{'▄'*80}{self.RESET}")
         print(f"\n{self.YELLOW}📝 Input Formats:{self.RESET} Space-separated, comma-separated, or mixed")
         print(f"{self.YELLOW}🚫 Invalid Data:{self.RESET} NULL, NA, NaN, empty values are auto-filtered\n")
-        raw = input(f"{self.BLUE}➤ Enter data: {self.RESET}").strip()
+        
+        start = time.time()
+        
+        choice = input(f"{self.BLUE}➤ Read from [F]ile or [S]tandard input? (f/s): {self.RESET}").strip().lower()
+        if choice == 'f':
+            fpath = input(f"{self.BLUE}➤ Enter file path: {self.RESET}").strip()
+            try:
+                with open(fpath, 'r') as f:
+                    raw = f.read()
+            except:
+                print(f"{self.RED}✗ File read error{self.RESET}"); return
+        else:
+            raw = input(f"{self.BLUE}➤ Enter data: {self.RESET}").strip()
+        
         if not raw:
             print(f"{self.RED}✗ Empty input{self.RESET}")
             return
@@ -301,11 +314,12 @@ class Engine:
                 sev_color = self.RED if anom['sev'] == "CRITICAL" else self.YELLOW
                 print(f"  {sev_color}◆{self.RESET}  Pos {anom['idx']:<4} | Value: {anom['val']:>10.2f} | Z-Score: {anom['z']:>6.2f} | {sev_color}{anom['sev']}{self.RESET}")
             if len(all_anomalies) > 15:
-                print(f"  {self.DIM}... and {len(all_anomalies)-15} more anomalies{self.RESET}")
+                print(f"  {self.DIM}... and {len(all_anomalies)-15} more anomalies{self.DIM}")
             print()
 
+        elapsed = time.time() - start
         print(f"{self.CYAN}{self.BOLD}{'▀'*80}▀{self.RESET}")
-        print(f"{self.GREEN}{self.BOLD}  ✨ Analysis Complete | System Ready for Production ✨{self.RESET}")
+        print(f"{self.GREEN}{self.BOLD}  ✨ Analysis Complete in {elapsed:.2f} seconds{self.RESET}")
         print(f"{self.CYAN}{self.BOLD}{'▄'*80}▄{self.RESET}\n")
 
 
