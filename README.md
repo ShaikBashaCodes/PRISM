@@ -99,7 +99,7 @@ Engine Class (280 lines)
 ## 🚀 Quick Start
 
 ```bash
-python3 PRISM_v1_0.py
+python3 prism.py
 
 Enter data: 1 4 9 16 25
 ```
